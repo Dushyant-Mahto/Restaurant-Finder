@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "firebase": "^9.21.0",
     "glider-js": "^1.7.8",
     "jshint": "^2.13.6"
   }

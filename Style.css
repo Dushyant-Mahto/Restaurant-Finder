@@ -10,6 +10,21 @@ body{
     border-style: solid;
     border-color: #e5e7eb;
 }
+/* .navbar {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 30px);
+    background-color: var(--white);
+    padding-inline: 20px;
+    box-shadow: var(--shadow-1);
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition: var(--transition-1);
+  } */
+
 .app{
     padding-left: 2rem;
     padding-right: 2rem;
