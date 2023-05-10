@@ -1,54 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search a placename</title>
-  <script src="https://cdn.maptiler.com/maptiler-sdk-js/latest/maptiler-sdk.umd.min.js"></script>
-  <link href="https://cdn.maptiler.com/maptiler-sdk-js/latest/maptiler-sdk.css" rel="stylesheet" />
-  <style>
-    body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-  </style>
+<html>
+<head> 
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multiple Markers with Info Windows to Google Maps</title> 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />  
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>  
+<style type="text/css">
+#mapCanvas {
+    width: 100%;
+    height: 450px;
+}
+body {font-family: "Times New Roman", Times, serif;}
+</style>
 </head>
 <body>
-  <div id="map"></div>
-  <script>
-      const urlParams = new URLSearchParams(window.location.search);
-      maptilersdk.config.apiKey = 'NWA8jTQntTTB6nbgWF1V';
-      const map = new maptilersdk.Map({
-        container: 'map', // container's id or the HTML element to render the map
-        style: maptilersdk.MapStyle.STREETS,
-        center: [79.1559, 12.9692], // starting position [lng, lat]
-        zoom: 14, // starting zoom
-      });
-      map.on('load', async () => {
-        map.addSource('search-results', {
-            type: 'geojson',
-            data: {
-                "type": "FeatureCollection",
-                "features": []
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+   <p><h3>Multiple Markers with Info Windows to Google Maps</h3></p>
+   <div id="mapContainer">
+                <div id="mapCanvas"></div>
+            </div>
+     </div>
+   </div>
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdGv5cjpA0dMUCSolCf89tl_vgccGvsu0"></script>
+<script>
+function initMap() {
+    var map;
+    var bounds = new google.maps.LatLngBounds();
+    var mapOptions = {
+        mapTypeId: 'roadmap'
+    };
+                     
+    // Display a map on the web page
+    map = new google.maps.Map(document.getElementById("mapCanvas"), mapOptions);
+    map.setTilt(50);
+         
+    // Multiple markers location, latitude, and longitude
+    var markers = [
+        ['Tara Maa Restaurant', 12.96708,79.156806]
+        ['Saleems Restaurant', 12.967524,79.155987],
+        ['Mandeez Kitchen', 12.966663,79.158618],
+        ['Limra Roll Center', 12.966824,79.155571]
+    ];
+                         
+    // Info window content
+    var infoWindowContent = [
+        ['<div class="info_content">' +
+        '<h3>Olongapo City, Philippines</h3>' +
+        '<p>Olongapo City Zambales Philippines</p>' + '</div>'],
+        ['<div class="info_content">' +
+        '<h3>Subic Bay, Philippines</h3>' +
+        '<p>Subic Bay Olongapo City Zambales Philippines</p>' +
+        '</div>'],
+        ['<div class="info_content">' +
+        '<h3>Angeles City, Pampanga</h3>' +
+        '<p>Angeles City, Pampanga Philippines</p>' +
+        '</div>'],
+        ['<div class="info_content">' +
+        '<h3>Clark Freeportzone, Pampanga</h3>' +
+        '<p>Clark Freeportzone, Pampanga Philippines</p>' +
+        '</div>']
+    ];
+         
+    // Add multiple markers to map
+    var infoWindow = new google.maps.InfoWindow(), marker, i;
+     
+    // Place each marker on the map  
+    for( i = 0; i < markers.length; i++ ) {
+        var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+        bounds.extend(position);
+        marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: markers[i][0]
+        });
+         
+        // Add info window to marker    
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+                infoWindow.setContent(infoWindowContent[i][0]);
+                infoWindow.open(map, marker);
             }
-        });
-        map.addLayer({
-            'id': 'point-result',
-            'type': 'circle',
-            'source': 'search-results',
-            'paint': {
-                'circle-radius': 8,
-                'circle-color': '#B42222',
-                'circle-opacity': 0.5
-            },
-            'filter': ['==', '$type', 'Point']
-        });
-        if (urlParams.get('q')) {
-          const results = await maptilersdk.geocoding.forward(urlParams.get('q'));
-          map.getSource('search-results').setData(results);
-          if (results.features[0]) {
-            map.fitBounds(results.features[0].bbox, {maxZoom: 19})
-          }
-        }
-      });
-  </script>
+        })(marker, i));
+ 
+        // Center the map to fit all markers on the screen
+        map.fitBounds(bounds);
+    }
+ 
+    // Set zoom level
+    var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+        this.setZoom(9);
+        google.maps.event.removeListener(boundsListener);
+    });
+     
+}
+// Load initialize function
+google.maps.event.addDomListener(window, 'load', initMap);
+</script>
 </body>
 </html>
